@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chatbox Booster</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>Chatbox Booster</h1>
+    <nav>
+      <button class="nav-btn active" data-tab="plugins">Plugins</button>
+      <button class="nav-btn" data-tab="config">Config</button>
+      <button class="nav-btn" data-tab="logs">Logs</button>
+      <button class="nav-btn" data-tab="mcp">MCP Setup</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="tab-plugins" class="tab-content active">
+      <h2>Plugin Management</h2>
+      <div id="plugin-list"></div>
+    </section>
+
+    <section id="tab-config" class="tab-content">
+      <h2>Configuration</h2>
+      <div id="config-editor"></div>
+      <button id="save-config" class="btn-primary">Save Config</button>
+    </section>
+
+    <section id="tab-logs" class="tab-content">
+      <h2>Recent Logs</h2>
+      <pre id="log-view"></pre>
+    </section>
+
+    <section id="tab-mcp" class="tab-content">
+      <h2>MCP Client Configuration</h2>
+      <div id="python-env-section">
+        <h3>Python Environment</h3>
+        <p>Select which Python interpreter the MCP server should use.</p>
+        <div id="python-env-current" class="info-bar"></div>
+        <div id="python-env-selector">
+          <label for="python-path-select">Detected environments:</label>
+          <select id="python-path-select"></select>
+          <button id="python-apply-preset" class="btn-secondary">Apply</button>
+        </div>
+        <div id="python-custom">
+          <label for="python-path-custom">Custom path:</label>
+          <input type="text" id="python-path-custom" placeholder="C:\Python311\python.exe">
+          <div class="python-custom-actions">
+            <button id="python-browse" class="btn-secondary">Browse...</button>
+            <button id="python-save" class="btn-primary">Save</button>
+            <button id="python-reset" class="btn-secondary">Reset to default</button>
+          </div>
+        </div>
+        <div id="python-env-status" class="status-msg"></div>
+      </div>
+      <hr>
+      <p>Copy this JSON into your AI client (Chatbox, Claude Desktop, etc.):</p>
+      <pre id="mcp-config"></pre>
+      <button id="copy-mcp" class="btn-primary">Copy to Clipboard</button>
+    </section>
+  </main>
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>

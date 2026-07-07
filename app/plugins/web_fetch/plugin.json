@@ -1,0 +1,9 @@
+{
+  "name": "web_fetch",
+  "version": "1.0.0",
+  "description": "Webpage fetching with curl_cffi, lxml extraction, and optional browser fallback",
+  "entry": "plugin.py",
+  "pip_dependencies": ["aiohttp", "curl_cffi", "lxml", "tiktoken"],
+  "optional_pip_dependencies": ["patchright"],
+  "config_schema": {}
+}

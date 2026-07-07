@@ -1,0 +1,90 @@
+{
+ "proxy": {
+    "ddgs": "http://127.0.0.1:10808",
+    "arxiv": null
+  },
+  "api": {
+    "rerank": {
+      "url": "api.siliconflow.cn/v1/rerank",
+      "api_key": "你的硅基流动 api key",
+      "model": "BAAI/bge-reranker-v2-m3",
+      "timeout": 10.0,
+      "max_tokens": 6144
+    },
+    "ai_eval": {
+      "url": "https://api.deepseek.com/chat/completions",
+      "api_key": "你的DeepSeek api key",
+      "model": "deepseek-v4-flash",
+      "timeout": 20.0,
+      "max_tokens": 64000,
+      "retry_count": 1
+    },
+    "serper": {
+      "url": "https://google.serper.dev/search",
+      "api_key": "你的Serper api key"
+    }
+  },
+  "domains": {
+    "high_authority": [
+      "scholar.google.com", "arxiv.org", "pubmed.gov", "doi.org",
+      "gov", "gov.cn", "gov.uk", "gc.ca",
+      "edu", "edu.cn", "ac.uk",
+      "reuters.com", "apnews.com", "bbc.com", "cnn.com",
+      "nytimes.com", "washingtonpost.com", "theguardian.com",
+      "xinhuanet.com", "people.com.cn", "cctv.com",
+      "wikipedia.org", "wikiwand.com"
+    ],
+    "medium_authority": [
+      "techcrunch.com", "theverge.com", "wired.com", "arstechnica.com",
+      "bloomberg.com", "wsj.com", "ft.com", "economist.com",
+      "stackoverflow.com", "zhihu.com",
+      "substack.com"
+    ],
+    "low_authority": [
+      "medium.com", "blogspot.com", "wordpress.com",
+      "reddit.com", "quora.com"
+    ],
+    "aggregation": [
+      "news.google.com", "news.yahoo.com", "bing.com",
+      "reddit.com", "alltop.com", "feedly.com",
+      "news.baidu.com", "toutiao.com"
+    ]
+  },
+  "quality": {
+    "low_quality_indicators": [
+      "read more", "read full", "browse thousands",
+      "latest updates", "latest news", "delivers the latest",
+      "explore the latest", "view all", "click here",
+      "no content", "无内容", "To continue reading", "Subscribe to unlock",
+      "View original post on", "展开剩余", "下载APP查看全文"
+    ],
+    "specific_info_patterns": [
+      "\\b(19|20)\\d{2}\\b",
+      "[\\$€£¥]\\d+[\\d,]*",
+      "\\d+\\s*(亿|万|billion|million|percent|%)",
+      "\\b\\d{1,2}[/-]\\d{1,2}[/-]\\d{2,4}\\b"
+    ],
+    "score_weights": {
+      "base_score": 48.0,
+      "low_quality_penalty": 8.0,
+      "short_length_penalty": 15.0,
+      "somewhat_short_penalty": 7.0,
+      "long_bonus": 12.0,
+      "medium_long_bonus": 10.0,
+      "aggregation_penalty": 10.0,
+      "specific_info_bonus": 4.0,
+      "title_quality_bonus": 5.0,
+      "title_query_match_bonus": 2.0,
+      "rerank_weight": 3.0,
+      "rerank_irrelevant_penalty": -15.0,
+      "rerank_irrelevant_threshold": -24.0,
+      "complete_sentence_bonus": 5.0
+    }
+  },
+  "playwright": {
+    "headless": true,
+    "idle_timeout": 600,
+    "max_concurrent": 5,
+    "page_timeout_ms": 30000
+  }
+}

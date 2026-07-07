@@ -1,0 +1,30 @@
+# Runtime state
+data/
+logs/
+runtime/
+
+# Config (user-specific)
+config/config.json
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Build
+installer/output/

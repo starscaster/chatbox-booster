@@ -1,0 +1,9 @@
+-r requirements-core.txt
+ddgs
+pypdf
+curl_cffi
+lxml
+tiktoken
+requests
+patchright
+pytest

@@ -1,0 +1,4 @@
+fastmcp
+aiohttp
+pystray
+pillow

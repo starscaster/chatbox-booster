@@ -1,0 +1,136 @@
+#!/usr/bin/env python3
+"""
+Build script: prepares the runtime directory for the installer.
+
+Downloads Python 3.12 embeddable package, injects pip, and installs
+core + default plugin dependencies into runtime/python/.
+
+Usage:
+    python installer/prepare_runtime.py
+"""
+import os
+import subprocess
+import sys
+import urllib.request
+import zipfile
+from pathlib import Path
+
+APP_ROOT = Path(__file__).resolve().parent.parent
+RUNTIME_DIR = APP_ROOT / "runtime"
+PYTHON_DIR = RUNTIME_DIR / "python"
+
+PYTHON_VERSION = "3.12.10"
+PYTHON_ARCH = "amd64"
+PYTHON_URL = f"https://www.python.org/ftp/python/{PYTHON_VERSION}/python-{PYTHON_VERSION}-embed-{PYTHON_ARCH}.zip"
+GET_PIP_URL = "https://bootstrap.pypa.org/get-pip.py"
+
+
+def download(url, dest):
+    print(f"Downloading {url} ...")
+    urllib.request.urlretrieve(url, dest)
+    print(f"  -> {dest}")
+
+
+def step_download_python():
+    if PYTHON_DIR.exists():
+        print(f"Python dir already exists: {PYTHON_DIR}, skipping download")
+        return
+    PYTHON_DIR.mkdir(parents=True)
+    zip_path = RUNTIME_DIR / "python-embed.zip"
+    download(PYTHON_URL, zip_path)
+    print("Extracting Python...")
+    with zipfile.ZipFile(zip_path) as zf:
+        zf.extractall(PYTHON_DIR)
+    zip_path.unlink()
+
+    # Enable pip by uncommenting import site in python312._pth
+    pth_files = list(PYTHON_DIR.glob("python*._pth"))
+    for pth in pth_files:
+        content = pth.read_text()
+        content = content.replace("#import site", "import site")
+        # Add app root to path so app package is importable
+        content += "\n..\\..\n"
+        pth.write_text(content)
+        print(f"  Patched {pth.name}")
+
+
+def step_install_pip():
+    python_exe = PYTHON_DIR / "python.exe"
+    get_pip_path = RUNTIME_DIR / "get-pip.py"
+    if not get_pip_path.exists():
+        download(GET_PIP_URL, get_pip_path)
+    print("Installing pip into embedded Python...")
+    result = subprocess.run(
+        [str(python_exe), str(get_pip_path), "--no-warn-script-location"],
+        capture_output=True, text=True, cwd=str(PYTHON_DIR),
+    )
+    if result.returncode != 0:
+        print(f"pip install failed:\n{result.stderr}")
+        sys.exit(1)
+    print("  pip installed")
+
+
+def step_install_deps():
+    python_exe = PYTHON_DIR / "python.exe"
+    # Core dependencies
+    core_req = APP_ROOT / "requirements-core.txt"
+    print(f"Installing core dependencies from {core_req}...")
+    result = subprocess.run(
+        [str(python_exe), "-m", "pip", "install", "-r", str(core_req), "-q"],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        print(f"Core dep install failed:\n{result.stderr}")
+        sys.exit(1)
+    print("  Core dependencies installed")
+
+    # Default plugin dependencies (search, web_fetch, academic, interactive)
+    # browser_engine deps are NOT installed by default
+    default_deps = [
+        "ddgs", "aiohttp", "requests", "tiktoken",  # search
+        "curl_cffi", "lxml",  # web_fetch (tiktoken already listed)
+        "pypdf",  # academic
+    ]
+    print(f"Installing default plugin dependencies: {default_deps}")
+    result = subprocess.run(
+        [str(python_exe), "-m", "pip", "install"] + default_deps + ["-q"],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        print(f"Plugin dep install failed:\n{result.stderr}")
+        sys.exit(1)
+    print("  Default plugin dependencies installed")
+
+
+def step_verify():
+    python_exe = PYTHON_DIR / "python.exe"
+    print("Verifying runtime...")
+    result = subprocess.run(
+        [str(python_exe), "-c", "import fastmcp, aiohttp; print('OK')"],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        print(f"Verification failed:\n{result.stderr}")
+        sys.exit(1)
+    print(f"  {result.stdout.strip()}")
+
+
+def main():
+    print(f"App root: {APP_ROOT}")
+    print(f"Runtime dir: {RUNTIME_DIR}")
+    RUNTIME_DIR.mkdir(parents=True, exist_ok=True)
+
+    step_download_python()
+    step_install_pip()
+    step_install_deps()
+    step_verify()
+
+    print("\nRuntime preparation complete!")
+    print(f"Python executable: {PYTHON_DIR / 'python.exe'}")
+    print("\nNext steps:")
+    print("  1. Run Inno Setup compiler with installer/build.iss")
+    print("  2. The installer will package app/ + runtime/ + config/ + locale/")
+
+
+if __name__ == "__main__":
+    main()

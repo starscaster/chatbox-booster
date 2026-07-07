@@ -1,0 +1,20 @@
+{
+  "name": "search",
+  "version": "1.0.0",
+  "description": "Web search via DuckDuckGo and Serper with quality scoring",
+  "entry": "plugin.py",
+  "pip_dependencies": ["ddgs", "aiohttp", "requests", "tiktoken"],
+  "optional_pip_dependencies": [],
+  "config_schema": {
+    "proxy.ddgs": {"type": "string?", "default": null, "label": "DuckDuckGo proxy"},
+    "proxy.arxiv": {"type": "string?", "default": null, "label": "arXiv proxy"},
+    "api.serper.url": {"type": "string", "default": "https://google.serper.dev/search", "label": "Serper API URL"},
+    "api.serper.api_key": {"type": "string?", "default": "", "label": "Serper API Key"},
+    "api.rerank.url": {"type": "string", "default": "api.siliconflow.cn/v1/rerank", "label": "Rerank API URL"},
+    "api.rerank.api_key": {"type": "string?", "default": "", "label": "Rerank API Key"},
+    "api.rerank.model": {"type": "string", "default": "BAAI/bge-reranker-v2-m3", "label": "Rerank Model"},
+    "api.ai_eval.url": {"type": "string", "default": "https://api.deepseek.com/chat/completions", "label": "AI Eval API URL"},
+    "api.ai_eval.api_key": {"type": "string?", "default": "", "label": "AI Eval API Key"},
+    "api.ai_eval.model": {"type": "string", "default": "deepseek-v4-flash", "label": "AI Eval Model"}
+  }
+}

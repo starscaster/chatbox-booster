@@ -1,0 +1,11 @@
+{
+  "name": "academic",
+  "version": "1.0.0",
+  "description": "arXiv paper search and PDF text extraction",
+  "entry": "plugin.py",
+  "pip_dependencies": ["aiohttp", "pypdf"],
+  "optional_pip_dependencies": [],
+  "config_schema": {
+    "proxy.arxiv": {"type": "string?", "default": null, "label": "arXiv proxy"}
+  }
+}

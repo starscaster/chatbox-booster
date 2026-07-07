@@ -1,0 +1,146 @@
+:root {
+  --bg: #1a1a2e;
+  --surface: #16213e;
+  --surface2: #0f3460;
+  --accent: #e94560;
+  --text: #eee;
+  --text-dim: #999;
+  --border: #233;
+  --green: #4caf50;
+  --yellow: #ff9800;
+  --red: #f44336;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Microsoft YaHei", "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+#app { max-width: 900px; margin: 0 auto; padding: 20px; }
+header { margin-bottom: 24px; }
+header h1 { font-size: 22px; margin-bottom: 12px; }
+nav { display: flex; gap: 8px; }
+.nav-btn {
+  padding: 6px 16px; border: 1px solid var(--border); border-radius: 6px;
+  background: var(--surface); color: var(--text-dim); cursor: pointer;
+  font-size: 13px; transition: all 0.15s;
+}
+.nav-btn:hover { color: var(--text); border-color: var(--surface2); }
+.nav-btn.active { background: var(--surface2); color: var(--text); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+h2 { font-size: 18px; margin-bottom: 16px; }
+.plugin-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px; margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.plugin-info { flex: 1; }
+.plugin-name { font-weight: 600; font-size: 15px; }
+.plugin-desc { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+.plugin-meta { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+.plugin-meta .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; margin-right: 6px; }
+.badge-ok { background: rgba(76,175,80,0.2); color: var(--green); }
+.badge-warn { background: rgba(255,152,0,0.2); color: var(--yellow); }
+.badge-err { background: rgba(244,67,54,0.2); color: var(--red); }
+.badge-dim { background: rgba(153,153,153,0.15); color: var(--text-dim); }
+.toggle {
+  position: relative; width: 44px; height: 24px; border-radius: 12px;
+  background: var(--border); cursor: pointer; transition: background 0.2s;
+  flex-shrink: 0; margin-left: 16px;
+}
+.toggle.on { background: var(--green); }
+.toggle::after {
+  content: ""; position: absolute; top: 2px; left: 2px;
+  width: 20px; height: 20px; border-radius: 50%; background: white;
+  transition: left 0.2s;
+}
+.toggle.on::after { left: 22px; }
+.config-row { margin-bottom: 14px; }
+.config-row label { display: block; font-size: 13px; margin-bottom: 4px; color: var(--text-dim); }
+.config-row input {
+  width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+  border-radius: 6px; background: var(--surface); color: var(--text);
+  font-size: 13px; font-family: monospace;
+}
+.config-row input:focus { outline: none; border-color: var(--surface2); }
+.config-section { margin-bottom: 24px; }
+.config-section h3 { font-size: 15px; margin-bottom: 12px; color: var(--accent); }
+.btn-primary {
+  padding: 8px 20px; border: none; border-radius: 6px;
+  background: var(--accent); color: white; cursor: pointer;
+  font-size: 13px; transition: opacity 0.15s;
+}
+.btn-primary:hover { opacity: 0.85; }
+.btn-secondary {
+  padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px;
+  background: var(--surface); color: var(--text); cursor: pointer;
+  font-size: 12px; transition: all 0.15s;
+}
+.btn-secondary:hover { background: var(--surface2); }
+hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+#python-env-section { margin-bottom: 20px; }
+#python-env-section h3 { font-size: 15px; color: var(--accent); margin-bottom: 6px; }
+#python-env-section p { font-size: 12px; color: var(--text-dim); margin-bottom: 14px; }
+
+.info-bar {
+  font-size: 12px; color: var(--text-dim); padding: 6px 10px;
+  background: var(--surface); border-radius: 6px; margin-bottom: 12px;
+  word-break: break-all; font-family: monospace;
+}
+
+#python-env-selector { margin-bottom: 10px; }
+#python-env-selector label { display: block; font-size: 12px; margin-bottom: 4px; color: var(--text-dim); }
+#python-path-select {
+  width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+  border-radius: 6px; background: var(--surface); color: var(--text);
+  font-size: 12px; margin-bottom: 8px; font-family: monospace;
+}
+#python-path-select option { font-family: monospace; font-size: 11px; }
+
+#python-custom label { display: block; font-size: 12px; margin-bottom: 4px; color: var(--text-dim); }
+#python-path-custom {
+  width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+  border-radius: 6px; background: var(--surface); color: var(--text);
+  font-size: 12px; margin-bottom: 8px; font-family: monospace;
+}
+#python-path-custom:focus { outline: none; border-color: var(--surface2); }
+.python-custom-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+
+.status-msg {
+  font-size: 12px; padding: 6px 10px; border-radius: 6px; margin-top: 4px;
+  min-height: 0; overflow: hidden; transition: all 0.2s;
+}
+.status-msg.ok { background: rgba(76,175,80,0.2); color: var(--green); }
+.status-msg.error { background: rgba(244,67,54,0.2); color: var(--red); }
+.status-msg.info { background: rgba(100,149,237,0.2); color: #6da8ff; }
+
+pre {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px; overflow-x: auto;
+  font-size: 12px; line-height: 1.5; white-space: pre-wrap;
+  max-height: 500px; overflow-y: auto;
+}
+
+.restart-banner {
+  background: rgba(255,152,0,0.15);
+  border: 1px solid rgba(255,152,0,0.4);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--yellow);
+}
+.restart-banner .close-btn {
+  background: none; border: none; color: var(--text-dim);
+  cursor: pointer; font-size: 18px; padding: 0 4px;
+}
+.restart-banner .close-btn:hover { color: var(--text); }
+
+.btn-install {
+  padding: 4px 12px; border: 1px solid var(--yellow); border-radius: 6px;
+  background: rgba(255,152,0,0.1); color: var(--yellow); cursor: pointer;
+  font-size: 11px; margin-top: 8px; transition: all 0.15s;
+}
+.btn-install:hover { background: rgba(255,152,0,0.2); }
+.btn-install:disabled { opacity: 0.5; cursor: wait; }

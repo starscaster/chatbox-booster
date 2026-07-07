@@ -1,0 +1,14 @@
+{
+  "name": "browser_engine",
+  "version": "1.0.0",
+  "description": "Patchright/Playwright browser service for SPA and anti-scraping fallback",
+  "entry": "plugin.py",
+  "pip_dependencies": ["patchright", "aiohttp"],
+  "optional_pip_dependencies": [],
+  "config_schema": {
+    "playwright.headless": {"type": "boolean", "default": true, "label": "Headless mode"},
+    "playwright.idle_timeout": {"type": "integer", "default": 600, "label": "Idle timeout (sec)"},
+    "playwright.max_concurrent": {"type": "integer", "default": 5, "label": "Max concurrent pages"},
+    "playwright.page_timeout_ms": {"type": "integer", "default": 30000, "label": "Page timeout (ms)"}
+  }
+}

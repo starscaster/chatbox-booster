@@ -1,0 +1,9 @@
+{
+  "name": "interactive",
+  "version": "1.0.0",
+  "description": "User interaction dialogs (confirm, input, inquiry forms)",
+  "entry": "plugin.py",
+  "pip_dependencies": [],
+  "optional_pip_dependencies": [],
+  "config_schema": {}
+}
