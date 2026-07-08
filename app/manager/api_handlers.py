@@ -16,6 +16,7 @@ import sys
 import re
 import subprocess
 import asyncio
+import requests
 from datetime import datetime
 from pathlib import Path
 from aiohttp import web
@@ -137,7 +138,7 @@ async def handle_mcp_config(request):
     """Generate MCP client config JSON for copy-paste."""
     ctx = _get_ctx(request)
     server_path = ctx.get_app_root() / "server.py"
-    python_exe = ctx.config.get("runtime.python_path") or sys.executable
+    python_exe = request.query.get("preview") or ctx.config.get("runtime.python_path") or sys.executable
     config = {
         "mcpServers": {
             "chatbox-booster": {
@@ -292,6 +293,13 @@ async def handle_python_env(request):
 
 async def handle_python_env_test(request):
     """Test a given Python interpreter: version and core imports."""
+    ALL_DEPS = [
+        ("fastmcp", True), ("aiohttp", True),  # core
+        ("ddgs", True), ("requests", True), ("tiktoken", True),   # search
+        ("curl_cffi", True), ("lxml", True),  # web_fetch
+        ("pypdf", True),  # academic
+        ("patchright", False),  # optional (browser_engine disabled by default)
+    ]
     try:
         body = await request.json()
     except Exception:
@@ -322,7 +330,7 @@ async def handle_python_env_test(request):
     test_code = (
         "import sys, json\n"
         "results = {'version': sys.version, 'executable': sys.executable, 'imports': {}, 'errors': []}\n"
-        "for mod in ('fastmcp', 'aiohttp'):\n"
+        "for mod in ('fastmcp', 'aiohttp', 'ddgs', 'requests', 'tiktoken', 'curl_cffi', 'lxml', 'pypdf', 'patchright'):\n"
         "    try:\n"
         "        __import__(mod)\n"
         "        results['imports'][mod] = True\n"
@@ -355,15 +363,177 @@ async def handle_python_env_test(request):
     except Exception as e:
         return web.json_response({"ok": True, "version": version, "core_imports": {}, "all_core_ok": False, "errors": [str(e)]})
 
-    all_ok = all(info.get("imports", {}).get(m) for m in ("fastmcp", "aiohttp"))
+    required = info.get("imports", {})
+    all_core_ok = all(required.get(m) for m in ("fastmcp", "aiohttp"))
+    missing_required = [m for m, req in ALL_DEPS if req and not required.get(m)]
+    has_warnings = any(not required.get(m) for m, req in ALL_DEPS if not req)
+
     return web.json_response({
         "ok": True,
         "version": version,
         "python_exe": info.get("executable", python_path),
         "core_imports": info.get("imports", {}),
-        "all_core_ok": all_ok,
+        "all_core_ok": all_core_ok,
+        "all_required_ok": len(missing_required) == 0,
+        "missing_required": missing_required,
+        "has_warnings": has_warnings,
         "errors": info.get("errors", []),
     })
+
+
+async def handle_python_env_install_deps(request):
+    """Install project dependencies into a specified Python interpreter."""
+    try:
+        body = await request.json()
+    except Exception:
+        return web.json_response({"ok": False, "error": "invalid JSON"}, status=400)
+
+    python_path = (body.get("path") or "").strip()
+    if not python_path:
+        return web.json_response({"ok": False, "error": "path is required"}, status=400)
+    if not Path(python_path).exists():
+        return web.json_response({"ok": False, "error": f"File not found: {python_path}"})
+
+    deps = body.get("deps") or [
+        "fastmcp", "aiohttp",
+        "ddgs", "requests", "tiktoken",
+        "curl_cffi", "lxml",
+        "pypdf",
+    ]
+
+    try:
+        result = await asyncio.to_thread(
+            lambda: subprocess.run(
+                [python_path, "-m", "pip", "install"] + deps + ["-q"],
+                capture_output=True, text=True, timeout=300,
+            )
+        )
+        if result.returncode == 0:
+            return web.json_response({"ok": True, "installed": deps})
+        else:
+            err = result.stderr.strip()[:500] or result.stdout.strip()[:500]
+            return web.json_response({"ok": False, "error": err}, status=500)
+    except subprocess.TimeoutExpired:
+        return web.json_response({"ok": False, "error": "pip install timed out (300s)"}, status=504)
+    except Exception as e:
+        return web.json_response({"ok": False, "error": str(e)}, status=500)
+
+
+async def handle_test_api(request):
+    """Test an API endpoint with the provided config (without saving)."""
+    try:
+        body = await request.json()
+    except Exception:
+        return web.json_response({"ok": False, "message": "invalid JSON"}, status=400)
+
+    api_type = body.get("type")
+    cfg = body.get("config", {})
+    url = (cfg.get("url") or "").strip()
+    api_key = (cfg.get("api_key") or "").strip()
+    model = (cfg.get("model") or "").strip()
+
+    if not url or not api_key:
+        return web.json_response({"ok": False, "message": "URL or API key is empty"})
+
+    if not url.startswith("http"):
+        url = "https://" + url
+
+    try:
+        timeout = float(cfg.get("timeout", 10))
+    except (ValueError, TypeError):
+        timeout = 10.0
+
+    try:
+        if api_type == "rerank":
+            headers = {"Authorization": f"Bearer {api_key}"}
+            payload = {"model": model, "query": "test", "documents": ["hello"]}
+
+            def _do():
+                return requests.post(url, json=payload, timeout=timeout, headers=headers)
+
+            response = await asyncio.to_thread(_do)
+
+            if response.status_code == 200:
+                data = response.json()
+                results = data.get("results", [])
+                return web.json_response({
+                    "ok": True,
+                    "status_code": response.status_code,
+                    "message": f"Rerank API connected, model responded with {len(results)} result(s)",
+                    "detail": "",
+                })
+            else:
+                return web.json_response({
+                    "ok": False,
+                    "status_code": response.status_code,
+                    "message": f"HTTP {response.status_code}",
+                    "detail": response.text[:500],
+                })
+
+        elif api_type == "ai_eval":
+            headers = {"Authorization": f"Bearer {api_key}"}
+            payload = {
+                "model": model,
+                "messages": [{"role": "user", "content": "Hi"}],
+                "max_tokens": 5,
+                "temperature": 0,
+            }
+
+            def _do():
+                return requests.post(url, json=payload, timeout=timeout, headers=headers)
+
+            response = await asyncio.to_thread(_do)
+
+            if response.status_code == 200:
+                data = response.json()
+                choices = data.get("choices", [])
+                return web.json_response({
+                    "ok": True,
+                    "status_code": response.status_code,
+                    "message": f"AI eval API connected, got {len(choices)} choice(s)",
+                    "detail": "",
+                })
+            else:
+                return web.json_response({
+                    "ok": False,
+                    "status_code": response.status_code,
+                    "message": f"HTTP {response.status_code}",
+                    "detail": response.text[:500],
+                })
+
+        elif api_type == "serper":
+            headers = {"X-API-KEY": api_key}
+            payload = {"q": "test", "num": 1}
+
+            def _do():
+                return requests.post(url, json=payload, timeout=timeout, headers=headers)
+
+            response = await asyncio.to_thread(_do)
+
+            if response.status_code == 200:
+                return web.json_response({
+                    "ok": True,
+                    "status_code": response.status_code,
+                    "message": "Serper API connected",
+                    "detail": "",
+                })
+            else:
+                return web.json_response({
+                    "ok": False,
+                    "status_code": response.status_code,
+                    "message": f"HTTP {response.status_code}",
+                    "detail": response.text[:500],
+                })
+
+        else:
+            return web.json_response({"ok": False, "message": f"Unknown API type: {api_type}"})
+
+    except requests.exceptions.Timeout:
+        return web.json_response({"ok": False, "message": f"Request timed out after {timeout}s"})
+    except requests.exceptions.ConnectionError:
+        return web.json_response({"ok": False, "message": f"Connection error: could not reach {url}"})
+    except Exception as e:
+        return web.json_response({"ok": False, "message": f"Error: {str(e)[:200]}"})
 
 
 def setup_routes(app):
@@ -371,6 +541,7 @@ def setup_routes(app):
     app.router.add_get("/api/status", handle_status)
     app.router.add_get("/api/config", handle_config_get)
     app.router.add_post("/api/config", handle_config_set)
+    app.router.add_post("/api/test-api", handle_test_api)
     app.router.add_get("/api/plugins", handle_plugins)
     app.router.add_post("/api/plugins/{name}/toggle", handle_plugin_toggle)
     app.router.add_post("/api/plugins/{name}/install-deps", handle_install_deps)
@@ -378,5 +549,6 @@ def setup_routes(app):
     app.router.add_get("/api/mcp-config", handle_mcp_config)
     app.router.add_get("/api/python-env", handle_python_env)
     app.router.add_post("/api/python-env/test", handle_python_env_test)
+    app.router.add_post("/api/python-env/install-deps", handle_python_env_install_deps)
     # Static files
     app.router.add_static("/static", path=str(app["static_dir"]), name="static")

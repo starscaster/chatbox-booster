@@ -5,7 +5,7 @@
   },
   "api": {
     "rerank": {
-      "url": "api.siliconflow.cn/v1/rerank",
+      "url": "https://api.siliconflow.com/v1/rerank",
       "api_key": "你的硅基流动 api key",
       "model": "BAAI/bge-reranker-v2-m3",
       "timeout": 10.0,

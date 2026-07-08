@@ -41,6 +41,10 @@
         <h3>Python Environment</h3>
         <p>Select which Python interpreter the MCP server should use.</p>
         <div id="python-env-current" class="info-bar"></div>
+        <div class="py-path-comparison">
+          <div class="py-path-row"><span class="py-label">Manager (current):</span><span class="py-value" id="py-current-path"></span></div>
+          <div class="py-path-row"><span class="py-label">MCP server target:</span><span class="py-value" id="py-configured-path"></span></div>
+        </div>
         <div id="python-env-selector">
           <label for="python-path-select">Detected environments:</label>
           <select id="python-path-select"></select>
@@ -50,12 +54,13 @@
           <label for="python-path-custom">Custom path:</label>
           <input type="text" id="python-path-custom" placeholder="C:\Python311\python.exe">
           <div class="python-custom-actions">
-            <button id="python-browse" class="btn-secondary">Browse...</button>
             <button id="python-save" class="btn-primary">Save</button>
+            <button id="python-test-btn" class="btn-secondary">Test Python</button>
             <button id="python-reset" class="btn-secondary">Reset to default</button>
           </div>
         </div>
         <div id="python-env-status" class="status-msg"></div>
+        <div id="python-test-result" class="test-result"></div>
       </div>
       <hr>
       <p>Copy this JSON into your AI client (Chatbox, Claude Desktop, etc.):</p>

@@ -2,6 +2,9 @@
 data/
 logs/
 runtime/
+*_stdout.txt
+*_stderr.txt
+.tmp_mcp_*.json
 
 # Config (user-specific)
 config/config.json
@@ -28,3 +31,7 @@ Thumbs.db
 
 # Build
 installer/output/
+
+# Agent
+.agents/
+.codex/

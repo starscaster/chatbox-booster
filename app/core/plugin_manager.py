@@ -147,6 +147,10 @@ class PluginManager:
     def set_enabled(self, name: str, enabled: bool) -> None:
         """Enable/disable a plugin in config."""
         self.ctx.config.set(f"plugins.{name}.enabled", enabled)
+        # Sync in-memory state so get_status() returns the correct value
+        info = self.plugins.get(name)
+        if info is not None:
+            info.enabled = enabled
 
     def check_dependencies(self, info: PluginInfo) -> tuple:
         """Check if a plugin's dependencies are met.
@@ -253,13 +257,15 @@ class PluginManager:
         """Get status of all plugins for UI display."""
         statuses = []
         for name, info in self.plugins.items():
+            # Read enabled from config directly to avoid stale memory state
+            enabled = self.is_enabled(name)
             all_met, missing_req, missing_opt = self.check_dependencies(info)
             statuses.append({
                 "name": info.name,
                 "version": info.version,
                 "description": info.description,
                 "source": info.source,
-                "enabled": info.enabled,
+                "enabled": enabled,
                 "loaded": info.loaded,
                 "load_error": info.load_error,
                 "deps_met": all_met,

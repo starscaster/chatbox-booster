@@ -112,6 +112,27 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
 .status-msg.error { background: rgba(244,67,54,0.2); color: var(--red); }
 .status-msg.info { background: rgba(100,149,237,0.2); color: #6da8ff; }
 
+.py-path-comparison { margin-bottom: 14px; font-size: 12px; }
+.py-path-row { display: flex; gap: 8px; padding: 4px 8px; border-radius: 4px; margin-bottom: 2px; }
+.py-path-row:nth-child(even) { background: rgba(255,255,255,0.03); }
+.py-label { color: var(--text-dim); min-width: 160px; flex-shrink: 0; }
+.py-value { font-family: monospace; word-break: break-all; color: var(--text); }
+
+.test-result { margin-top: 10px; padding: 10px 12px; border-radius: 6px; font-size: 12px; line-height: 1.6; }
+.test-result-ok { background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.3); }
+.test-result-warn { background: rgba(255,152,0,0.1); border: 1px solid rgba(255,152,0,0.3); }
+.test-result-err { background: rgba(244,67,54,0.1); border: 1px solid rgba(244,67,54,0.3); }
+.test-line { margin: 2px 0; }
+.test-section-title { color: var(--text-dim); margin: 6px 0 2px; font-weight: 600; }
+.test-icon-ok { color: var(--green); margin-right: 4px; }
+.test-icon-fail { color: var(--red); margin-right: 4px; }
+.test-err { color: var(--red); }
+.test-ver { color: var(--text); }
+.test-spinner { color: var(--text-dim); font-style: italic; }
+.test-summary { margin-top: 6px; padding: 4px 8px; border-radius: 4px; font-weight: 600; }
+.test-summary-ok { background: rgba(76,175,80,0.2); color: var(--green); }
+.test-summary-fail { background: rgba(244,67,54,0.2); color: var(--red); }
+
 pre {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 8px; padding: 16px; overflow-x: auto;
