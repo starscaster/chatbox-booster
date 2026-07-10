@@ -1,5 +1,5 @@
 {
- "proxy": {
+  "proxy": {
     "ddgs": "http://127.0.0.1:10808",
     "arxiv": null
   },
@@ -26,37 +26,79 @@
   },
   "domains": {
     "high_authority": [
-      "scholar.google.com", "arxiv.org", "pubmed.gov", "doi.org",
-      "gov", "gov.cn", "gov.uk", "gc.ca",
-      "edu", "edu.cn", "ac.uk",
-      "reuters.com", "apnews.com", "bbc.com", "cnn.com",
-      "nytimes.com", "washingtonpost.com", "theguardian.com",
-      "xinhuanet.com", "people.com.cn", "cctv.com",
-      "wikipedia.org", "wikiwand.com"
+      "scholar.google.com",
+      "arxiv.org",
+      "pubmed.gov",
+      "doi.org",
+      "gov",
+      "gov.cn",
+      "gov.uk",
+      "gc.ca",
+      "edu",
+      "edu.cn",
+      "ac.uk",
+      "reuters.com",
+      "apnews.com",
+      "bbc.com",
+      "cnn.com",
+      "nytimes.com",
+      "washingtonpost.com",
+      "theguardian.com",
+      "xinhuanet.com",
+      "people.com.cn",
+      "cctv.com",
+      "wikipedia.org",
+      "wikiwand.com"
     ],
     "medium_authority": [
-      "techcrunch.com", "theverge.com", "wired.com", "arstechnica.com",
-      "bloomberg.com", "wsj.com", "ft.com", "economist.com",
-      "stackoverflow.com", "zhihu.com",
+      "techcrunch.com",
+      "theverge.com",
+      "wired.com",
+      "arstechnica.com",
+      "bloomberg.com",
+      "wsj.com",
+      "ft.com",
+      "economist.com",
+      "stackoverflow.com",
+      "zhihu.com",
       "substack.com"
     ],
     "low_authority": [
-      "medium.com", "blogspot.com", "wordpress.com",
-      "reddit.com", "quora.com"
+      "medium.com",
+      "blogspot.com",
+      "wordpress.com",
+      "reddit.com",
+      "quora.com"
     ],
     "aggregation": [
-      "news.google.com", "news.yahoo.com", "bing.com",
-      "reddit.com", "alltop.com", "feedly.com",
-      "news.baidu.com", "toutiao.com"
+      "news.google.com",
+      "news.yahoo.com",
+      "bing.com",
+      "reddit.com",
+      "alltop.com",
+      "feedly.com",
+      "news.baidu.com",
+      "toutiao.com"
     ]
   },
   "quality": {
     "low_quality_indicators": [
-      "read more", "read full", "browse thousands",
-      "latest updates", "latest news", "delivers the latest",
-      "explore the latest", "view all", "click here",
-      "no content", "无内容", "To continue reading", "Subscribe to unlock",
-      "View original post on", "展开剩余", "下载APP查看全文"
+      "read more",
+      "read full",
+      "browse thousands",
+      "latest updates",
+      "latest news",
+      "delivers the latest",
+      "explore the latest",
+      "view all",
+      "click here",
+      "no content",
+      "无内容",
+      "To continue reading",
+      "Subscribe to unlock",
+      "View original post on",
+      "展开剩余",
+      "下载APP查看全文"
     ],
     "specific_info_patterns": [
       "\\b(19|20)\\d{2}\\b",
@@ -86,5 +128,22 @@
     "idle_timeout": 600,
     "max_concurrent": 5,
     "page_timeout_ms": 30000
+  },
+  "plugins": {
+    "search": {
+      "enabled": false
+    },
+    "web_fetch": {
+      "enabled": false
+    },
+    "academic": {
+      "enabled": false
+    },
+    "interactive": {
+      "enabled": false
+    },
+    "browser_engine": {
+      "enabled": false
+    }
   }
 }

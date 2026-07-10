@@ -35,3 +35,12 @@ installer/output/
 # Agent
 .agents/
 .codex/
+
+# Test/temp scripts
+installer/build.iss  # deprecated, keep only build-base.iss and build-full.iss
+_run_webui.py
+_verify_embedded.py
+_webui_out.txt
+_test_*.txt
+manager_stdout.txt
+manager_stderr.txt

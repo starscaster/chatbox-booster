@@ -1,0 +1,62 @@
+name: Build Installer
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        variant: [base, full]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Inno Setup
+        run: |
+          choco install innosetup -y --version=6.2.2
+          echo "C:\Program Files (x86)\Inno Setup 6" >> $env:GITHUB_PATH
+
+      - name: Prepare embedded Python runtime (${{ matrix.variant }})
+        working-directory: ${{ github.workspace }}
+        run: |
+          if ("${{ matrix.variant }}" -eq "full") {
+            python installer/prepare_runtime.py --full
+          } else {
+            python installer/prepare_runtime.py
+          }
+
+      - name: Verify embedded Python
+        working-directory: ${{ github.workspace }}
+        run: |
+          $env:PYTHONPATH = "${{ github.workspace }}"
+          runtime/python/python.exe -c "import fastmcp, aiohttp; print('Core OK')"
+          if ("${{ matrix.variant }}" -eq "full") {
+            runtime/python/python.exe -c "import ddgs, pypdf, tiktoken; print('Plugin deps OK')"
+          }
+
+      - name: Compile installer (${{ matrix.variant }})
+        working-directory: ${{ github.workspace }}
+        run: ISCC.exe installer/build-${{ matrix.variant }}.iss
+
+      - name: Upload installer to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: installer/output/ChatboxBooster-Setup-*.exe
+          generate_release_notes: true
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ChatboxBooster-Setup-${{ matrix.variant }}
+          path: installer/output/ChatboxBooster-Setup-${{ matrix.variant }}*.exe
+          if-no-files-found: error
