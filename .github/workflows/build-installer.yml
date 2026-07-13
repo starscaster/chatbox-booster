@@ -73,10 +73,10 @@ jobs:
         run: |
           $files = Get-ChildItem -Path artifacts -Filter *.exe | ForEach-Object { $_.FullName }
           Write-Host "Files to upload: $files"
-          gh release create "${{ github.ref_name }}" --generate-notes $files 2>$null
+          gh release create "${{ github.ref_name }}" --generate-notes $files -R "${{ github.repository }}" 2>$null
           if ($LASTEXITCODE -ne 0) {
             Write-Host "Release already exists, uploading assets..."
-            gh release upload "${{ github.ref_name }}" $files --clobber
+            gh release upload "${{ github.ref_name }}" $files --clobber -R "${{ github.repository }}"
           }
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
