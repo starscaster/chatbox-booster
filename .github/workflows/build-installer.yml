@@ -62,6 +62,10 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: windows-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Download all installers
         uses: actions/download-artifact@v4
         with:
@@ -73,10 +77,7 @@ jobs:
         run: |
           $files = Get-ChildItem -Path artifacts -Filter *.exe | ForEach-Object { $_.FullName }
           Write-Host "Files to upload: $files"
-          gh release create "${{ github.ref_name }}" --generate-notes $files -R "${{ github.repository }}" 2>$null
-          if ($LASTEXITCODE -ne 0) {
-            Write-Host "Release already exists, uploading assets..."
-            gh release upload "${{ github.ref_name }}" $files --clobber -R "${{ github.repository }}"
-          }
+          gh release delete "${{ github.ref_name }}" -y 2>$null
+          gh release create "${{ github.ref_name }}" $files --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
