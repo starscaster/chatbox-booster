@@ -73,18 +73,10 @@ jobs:
         run: |
           $files = Get-ChildItem -Path artifacts -Filter *.exe | ForEach-Object { $_.FullName }
           Write-Host "Files to upload: $files"
-          
-          # Attempt to create release and capture the actual exit code
-          gh release create "${{ github.ref_name }}" --generate-notes $files -R "${{ github.repository }}"
-          $createExitCode = $LASTEXITCODE
-          
-          if ($createExitCode -eq 0) {
-            Write-Host "Release created successfully"
-          } elseif ($createExitCode -eq 1) {
+          gh release create "${{ github.ref_name }}" --generate-notes $files -R "${{ github.repository }}" 2>$null
+          if ($LASTEXITCODE -ne 0) {
             Write-Host "Release already exists, uploading assets..."
             gh release upload "${{ github.ref_name }}" $files --clobber -R "${{ github.repository }}"
-          } else {
-            exit $createExitCode
           }
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
