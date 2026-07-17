@@ -145,5 +145,13 @@
     "browser_engine": {
       "enabled": false
     }
+  },
+  "chat": {
+    "api_url": "https://api.deepseek.com/v1/chat/completions",
+    "api_key": "",
+    "model": "deepseek-v4-flash",
+    "system_prompt": "You are a helpful assistant with access to web search, web page fetching, PDF reading, academic paper search, and user interaction tools. Use them proactively when the user asks questions that require real-time information or web content.",
+    "temperature": 0.6,
+    "max_tokens": 64000
   }
 }

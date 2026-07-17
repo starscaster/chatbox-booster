@@ -1,4 +1,4 @@
-"""
+﻿"""
 System tray icon for Chatbox Booster management.
 
 Shows status, provides menu to open web UI, and exits cleanly.
@@ -16,8 +16,8 @@ def _get_app_root():
 
 
 def _read_port_info():
-    port_file = _get_app_root() / "data" / "manager" / ".webui_port"
-    token_file = _get_app_root() / "data" / "manager" / ".webui_token"
+    port_file = _DATA_ROOT / "data" / "manager" / ".webui_port"
+    token_file = _DATA_ROOT / "data" / "manager" / ".webui_token"
     if not port_file.exists():
         return None, None
     port = int(port_file.read_text().strip())

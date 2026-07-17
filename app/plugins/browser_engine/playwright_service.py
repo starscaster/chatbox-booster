@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import json
 import os
 import random
@@ -7,6 +7,7 @@ import socket
 import sys
 import time
 from pathlib import Path
+from app.core.shared_services import _DATA_ROOT
 
 _APP_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 if str(_APP_ROOT) not in sys.path:
@@ -23,7 +24,7 @@ import aiohttp
 from aiohttp import web
 
 
-_SCRIPT_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data" / "browser_engine"
+_SCRIPT_DIR = _DATA_ROOT / "browser_engine"
 
 IDLE_TIMEOUT = int(os.environ.get("PW_IDLE_TIMEOUT", "600"))
 MAX_CONCURRENT = int(os.environ.get("PW_MAX_CONCURRENT", "5"))

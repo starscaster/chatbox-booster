@@ -1,4 +1,4 @@
-"""
+﻿"""
 Web fetch plugin — fetches webpages via curl_cffi with browser fallback.
 
 Migrated from MCPtool_0427.py, adapted to plugin framework.
@@ -47,6 +47,7 @@ def _is_network_error(msg: str) -> bool:
 def register(ctx):
     locale = ctx.locale_section("webpage_fetch")
     app_root = ctx.get_app_root()
+    data_root = ctx.get_data_root()
 
     async def fetch_webpage_tool(
         url: str,
@@ -104,9 +105,15 @@ def register(ctx):
                     if resp_status == 403:
                         last_error = locale.get("403_browser_fallback", url=url)
                         browser_text = await browser_fallback_fetch(
-                            url, timeout, text_only, max_tokens,
-                            raw_html=raw_body, force=True,
-                            locale=locale, app_root=app_root,
+                            url=url,
+                            raw_html=raw_body,
+                            extracted_text="",
+                            timeout=timeout,
+                            text_only=text_only,
+                            max_tokens=max_tokens,
+                            locale=locale,
+                            app_root=app_root,
+                            force=True,
                         )
                         if browser_text:
                             browser_text = await _enrich_with_comments(browser_text)
@@ -148,9 +155,15 @@ def register(ctx):
         _needs_fallback = is_spa_shell(raw_body, text or "") and ("text/html" in content_type)
         if _needs_fallback:
             browser_result = await browser_fallback_fetch(
-                url, timeout, text_only, max_tokens,
-                raw_html=raw_body, extracted_text=text or "",
-                force=False, locale=locale, app_root=app_root,
+                url=url,
+                raw_html=raw_body,
+                extracted_text=text or "",
+                timeout=timeout,
+                text_only=text_only,
+                max_tokens=max_tokens,
+                locale=locale,
+                app_root=app_root,
+                force=False,
             )
             if browser_result:
                 browser_result = await _enrich_with_comments(browser_result)

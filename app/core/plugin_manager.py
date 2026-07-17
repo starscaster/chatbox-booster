@@ -1,4 +1,4 @@
-"""
+﻿"""
 Plugin manager - discovers, loads, and manages plugin lifecycle.
 
 Plugin sources (in priority order):
@@ -18,12 +18,12 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 from .dep_manager import ensure_deps, is_installed
-from .shared_services import SharedContext
+from .shared_services import SharedContext, _DATA_ROOT
 
 
 _APP_ROOT = Path(__file__).resolve().parent.parent.parent
 _BUILTIN_PLUGINS_DIR = _APP_ROOT / "app" / "plugins"
-_USER_PLUGINS_DIR = _APP_ROOT / "user_plugins"
+_USER_PLUGINS_DIR = _DATA_ROOT / "user_plugins"
 
 
 @dataclass

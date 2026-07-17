@@ -1,4 +1,4 @@
-"""
+﻿"""
 MCP server entry point.
 
 Initializes SharedContext, discovers and loads plugins via PluginManager,
@@ -16,7 +16,7 @@ from .plugin_manager import PluginManager
 
 def _check_restart_marker(ctx: SharedContext):
     """Check for .needs_restart marker from management UI and log a warning."""
-    marker = ctx.get_app_root() / "data" / "manager" / ".needs_restart"
+    marker = ctx.get_data_root() / "manager" / ".needs_restart"
     if marker.exists():
         try:
             info = json.loads(marker.read_text(encoding="utf-8"))

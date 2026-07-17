@@ -1,4 +1,4 @@
-"""
+﻿"""
 SharedContext — the service container passed to every plugin's register() function.
 
 Provides unified access to config, proxy resolution, locale, logging,
@@ -15,7 +15,21 @@ from .config import Config
 from .locale import LocaleHelper, detect_locale
 
 _APP_ROOT = Path(__file__).resolve().parent.parent.parent
-_LOG_DIR = _APP_ROOT / "logs"
+import configparser as _configparser
+
+def _get_data_root() -> Path:
+    """Resolve the writable data root: AppData if installed, else app root for dev."""
+    _ini_path = _APP_ROOT / "data_path.ini"
+    if _ini_path.exists():
+        _cfg = _configparser.ConfigParser()
+        _cfg.read(_ini_path, encoding="utf-8")
+        _data = Path(_cfg["Paths"]["AppDataDir"])
+        _data.mkdir(parents=True, exist_ok=True)
+        return _data
+    return _APP_ROOT
+
+_DATA_ROOT = _get_data_root()
+_LOG_DIR = _DATA_ROOT / "logs"
 
 
 class _EventBus:
@@ -121,8 +135,11 @@ class SharedContext:
     def get_app_root(self) -> Path:
         return self._app_root
 
+    def get_data_root(self) -> Path:
+        return _DATA_ROOT / "data"
+
     def get_plugin_dir(self, plugin_name: str) -> Path:
-        d = self._app_root / "data" / plugin_name
+        d = self.get_data_root() / plugin_name
         d.mkdir(parents=True, exist_ok=True)
         return d
 

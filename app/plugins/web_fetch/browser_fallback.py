@@ -1,4 +1,4 @@
-"""
+﻿"""
 Browser fallback for SPA pages and 403 anti-scraping.
 
 Checks if browser_engine plugin is available via event bus.
@@ -19,11 +19,11 @@ _PID_FILE = None
 _SERVICE_URL = None
 
 
-def _get_port_files(app_root: Path):
+def _get_port_files(data_root: Path):
     global _PORT_FILE, _PID_FILE
     if _PORT_FILE is None:
-        _PORT_FILE = app_root / "data" / "browser_engine" / ".playwright_port"
-        _PID_FILE = app_root / "data" / "browser_engine" / ".playwright_pid"
+        _PORT_FILE = data_root / "browser_engine" / ".playwright_port"
+        _PID_FILE = data_root / "browser_engine" / ".playwright_pid"
     return _PORT_FILE, _PID_FILE
 
 
@@ -72,10 +72,10 @@ async def _health_check(app_root: Path):
         return False
 
 
-def _start_service(app_root: Path):
+def _start_service(data_root: Path):
     import aiohttp
     port_file, _ = _get_port_files(app_root)
-    data_dir = app_root / "data" / "browser_engine"
+    data_dir = data_root / "browser_engine"
     data_dir.mkdir(parents=True, exist_ok=True)
 
     # Find browser_engine plugin's service script

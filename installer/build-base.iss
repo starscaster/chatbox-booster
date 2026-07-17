@@ -1,4 +1,4 @@
-; Chatbox Booster BASE Installer - Inno Setup Script
+﻿; Chatbox Booster BASE Installer - Inno Setup Script
 ; Core runtime only (no plugin dependencies pre-installed).
 ; Plugins will auto-install their deps on first run via dep_manager.
 ; Build: iscc installer\build-base.iss
@@ -40,12 +40,12 @@ Source: "{#AppRoot}\requirements-core.txt"; DestDir: "{app}"; Flags: ignoreversi
 Source: "{#AppRoot}\runtime\*"; DestDir: "{app}\runtime"; Flags: recursesubdirs
 
 ; User plugins directory (empty, created on install)
-Source: "{#AppRoot}\user_plugins\*"; DestDir: "{app}\user_plugins"; Flags: recursesubdirs skipifsourcedoesntexist
+Source: "{#AppRoot}\user_plugins\*"; DestDir: "{localappdata}\ChatboxBooster\user_plugins"; Flags: recursesubdirs skipifsourcedoesntexist
 
 [Dirs]
-Name: "{app}\user_plugins"; Flags: uninsneveruninstall
-Name: "{app}\data"; Flags: uninsneveruninstall
-Name: "{app}\logs"; Flags: uninsneveruninstall
+Name: "{localappdata}\ChatboxBooster\user_plugins"; Flags: uninsneveruninstall
+Name: "{localappdata}\ChatboxBooster\data"; Flags: uninsneveruninstall
+Name: "{localappdata}\ChatboxBooster\logs"; Flags: uninsneveruninstall
 
 [Icons]
 Name: "{group}\Chatbox Booster Settings"; Filename: "{app}\runtime\python\python.exe"; Parameters: "{app}\manager_main.py"; WorkingDir: "{app}"
@@ -56,8 +56,8 @@ Filename: "{app}\runtime\python\python.exe"; Parameters: "{app}\manager_main.py"
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\runtime"
-Type: filesandordirs; Name: "{app}\logs"
-Type: filesandordirs; Name: "{app}\data"
+Type: filesandordirs; Name: "{localappdata}\ChatboxBooster\logs"
+Type: filesandordirs; Name: "{localappdata}\ChatboxBooster\data"
 Type: filesandordirs; Name: "{app}\__pycache__"
 Type: filesandordirs; Name: "{app}\app\__pycache__"
 Type: filesandordirs; Name: "{app}\app\core\__pycache__"

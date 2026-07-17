@@ -1,4 +1,4 @@
-"""
+﻿"""
 Browser engine plugin — provides a Patchright browser service for SPA fallback.
 
 This is an optional heavy plugin. When enabled, it runs a local HTTP service
@@ -19,7 +19,7 @@ def register(ctx):
     request a browser fetch through the event bus.
     """
     app_root = ctx.get_app_root()
-    data_dir = app_root / "data" / "browser_engine"
+    data_dir = ctx.get_data_root() / "browser_engine"
     data_dir.mkdir(parents=True, exist_ok=True)
 
     ctx.logger.info("Browser engine plugin active (no MCP tools, provides browser service)")

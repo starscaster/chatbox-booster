@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 """
-Chatbox Booster Manager - main entry point for the management application.
+Chatbox Booster Launcher — starts the web server and opens the browser.
 
-Launches:
-1. The web UI server (in a background thread)
-2. The system tray icon (blocking, main thread)
-
-This is what the user launches from the Start Menu shortcut.
-It is NOT the MCP server itself - that is launched by AI clients via server.py.
+This is the user-facing entry point. It launches the management web server
+(which also serves the chat UI) and automatically opens the default browser.
+No system tray icon; closing the terminal window stops the server.
 """
 import sys
 import threading
+import time
+import webbrowser
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parent
@@ -22,8 +21,9 @@ def main():
     from app.core.config import Config, ensure_config_exists
     from app.core.shared_services import SharedContext
     from app.core.plugin_manager import PluginManager
-    from app.manager.web_server import run_web_server
-    from app.manager.tray import run_tray
+    from app.manager.web_server import run_web_server, read_port_info, write_port_info
+    from app.manager.web_server import _find_available_port, create_app
+    from aiohttp import web
 
     try:
         ensure_config_exists()
@@ -33,13 +33,13 @@ def main():
 
     config = Config()
     ctx = SharedContext(config)
-    ctx.logger.info("Manager starting...")
+    ctx.logger.info("Launcher starting...")
 
     pm = PluginManager(ctx)
     pm.discover()
     ctx.logger.info(f"Discovered {len(pm.plugins)} plugin(s)")
 
-    # Build MCP server instance for chat tool-calling support
+    # Build MCP server for chat tool-calling
     mcp = None
     try:
         from fastmcp import FastMCP
@@ -65,30 +65,23 @@ def main():
                     ctx.logger.warning(f"Could not register tool: {e}")
         ctx.logger.info(f"MCP server built for chat with {len(loaded)} plugins")
     except Exception as e:
-        ctx.logger.error(f"Could not build MCP server for chat: {e}")
+        ctx.logger.error(f"Could not build MCP server: {e}")
         mcp = None
 
-    def _run_web():
-        try:
-            run_web_server(ctx, pm, mcp)
-        except Exception as e:
-            ctx.logger.error(f"Web server error: {e}")
+    # Create and start web server
+    app, token = create_app(ctx, pm, mcp)
+    port = _find_available_port()
+    write_port_info(port, token)
+    url = f"http://127.0.0.1:{port}?token={token}"
+    ctx.logger.info(f"Running on {url}")
 
-    web_thread = threading.Thread(target=_run_web, daemon=True)
-    web_thread.start()
-    ctx.logger.info("Web UI thread started")
+    # Open browser after a short delay
+    def _open_browser():
+        time.sleep(1.5)
+        webbrowser.open(url)
+    threading.Thread(target=_open_browser, daemon=True).start()
 
-    try:
-        run_tray(web_thread)
-    except Exception as e:
-        ctx.logger.error(f"Tray error: {e}")
-        print(f"Tray failed: {e}. Web UI is still running. Press Ctrl+C to exit.")
-        try:
-            while True:
-                import time
-                time.sleep(1)
-        except KeyboardInterrupt:
-            pass
+    web.run_app(app, host="127.0.0.1", port=port, print=lambda *a, **kw: None)
 
 
 if __name__ == "__main__":

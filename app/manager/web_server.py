@@ -1,4 +1,4 @@
-"""
+﻿"""
 Local web server for the management UI.
 
 Runs an aiohttp server on 127.0.0.1 with a random port.
@@ -10,9 +10,11 @@ import random
 import socket
 from pathlib import Path
 
+from app.core.shared_services import _DATA_ROOT
 from aiohttp import web
 
 from .api_handlers import setup_routes
+from .chat_handlers import setup_chat_routes
 from ..core.config import Config, ensure_config_exists
 from ..core.shared_services import SharedContext
 from ..core.plugin_manager import PluginManager
@@ -37,15 +39,15 @@ def _get_app_root():
 
 
 def _get_port_file():
-    return _get_app_root() / "data" / "manager" / ".webui_port"
+    return _DATA_ROOT / "data" / "manager" / ".webui_port"
 
 
 def _get_token_file():
-    return _get_app_root() / "data" / "manager" / ".webui_token"
+    return _DATA_ROOT / "data" / "manager" / ".webui_token"
 
 
 def write_port_info(port: int, token: str):
-    data_dir = _get_app_root() / "data" / "manager"
+    data_dir = _DATA_ROOT / "data" / "manager"
     data_dir.mkdir(parents=True, exist_ok=True)
     _get_port_file().write_text(str(port))
     _get_token_file().write_text(token)
@@ -61,7 +63,7 @@ def read_port_info():
     return port, token
 
 
-def create_app(ctx: SharedContext, pm: PluginManager):
+def create_app(ctx: SharedContext, pm: PluginManager, mcp=None):
     """Create and configure the aiohttp web application."""
     import secrets
     static_dir = str(Path(__file__).resolve().parent / "static")
@@ -70,10 +72,13 @@ def create_app(ctx: SharedContext, pm: PluginManager):
     app = web.Application()
     app["ctx"] = ctx
     app["pm"] = pm
+    app["mcp"] = mcp
     app["static_dir"] = static_dir
     app["token"] = token
 
     setup_routes(app)
+
+    setup_chat_routes(app)
 
     # Simple token auth middleware
     @web.middleware
@@ -91,9 +96,9 @@ def create_app(ctx: SharedContext, pm: PluginManager):
     return app, token
 
 
-def run_web_server(ctx: SharedContext, pm: PluginManager):
+def run_web_server(ctx: SharedContext, pm: PluginManager, mcp=None):
     """Run the web server (blocking). Returns the port."""
-    app, token = create_app(ctx, pm)
+    app, token = create_app(ctx, pm, mcp)
     port = _find_available_port()
     write_port_info(port, token)
     ctx.logger.info(f"Web UI running on http://127.0.0.1:{port}?token={token}")

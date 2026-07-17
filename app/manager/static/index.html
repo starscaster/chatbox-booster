@@ -7,68 +7,67 @@
 <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-<div id="app">
-  <header>
+
+<div id="chat-page">
+  <header id="chat-header">
     <h1>Chatbox Booster</h1>
-    <nav>
-      <button class="nav-btn active" data-tab="plugins">Plugins</button>
-      <button class="nav-btn" data-tab="config">Config</button>
-      <button class="nav-btn" data-tab="logs">Logs</button>
-      <button class="nav-btn" data-tab="mcp">MCP Setup</button>
-    </nav>
+    <button id="settings-btn" class="icon-btn" title="Settings">&#9881;</button>
   </header>
-
-  <main>
-    <section id="tab-plugins" class="tab-content active">
-      <h2>Plugin Management</h2>
-      <div id="plugin-list"></div>
-    </section>
-
-    <section id="tab-config" class="tab-content">
-      <h2>Configuration</h2>
-      <div id="config-editor"></div>
-      <button id="save-config" class="btn-primary">Save Config</button>
-    </section>
-
-    <section id="tab-logs" class="tab-content">
-      <h2>Recent Logs</h2>
-      <pre id="log-view"></pre>
-    </section>
-
-    <section id="tab-mcp" class="tab-content">
-      <h2>MCP Client Configuration</h2>
-      <div id="python-env-section">
-        <h3>Python Environment</h3>
-        <p>Select which Python interpreter the MCP server should use.</p>
-        <div id="python-env-current" class="info-bar"></div>
-        <div class="py-path-comparison">
-          <div class="py-path-row"><span class="py-label">Manager (current):</span><span class="py-value" id="py-current-path"></span></div>
-          <div class="py-path-row"><span class="py-label">MCP server target:</span><span class="py-value" id="py-configured-path"></span></div>
-        </div>
-        <div id="python-env-selector">
-          <label for="python-path-select">Detected environments:</label>
-          <select id="python-path-select"></select>
-          <button id="python-apply-preset" class="btn-secondary">Apply</button>
-        </div>
-        <div id="python-custom">
-          <label for="python-path-custom">Custom path:</label>
-          <input type="text" id="python-path-custom" placeholder="C:\Python311\python.exe">
-          <div class="python-custom-actions">
-            <button id="python-save" class="btn-primary">Save</button>
-            <button id="python-test-btn" class="btn-secondary">Test Python</button>
-            <button id="python-reset" class="btn-secondary">Reset to default</button>
-          </div>
-        </div>
-        <div id="python-env-status" class="status-msg"></div>
-        <div id="python-test-result" class="test-result"></div>
-      </div>
-      <hr>
-      <p>Copy this JSON into your AI client (Chatbox, Claude Desktop, etc.):</p>
-      <pre id="mcp-config"></pre>
-      <button id="copy-mcp" class="btn-primary">Copy to Clipboard</button>
-    </section>
-  </main>
+  <div id="chat-messages"></div>
+  <div id="chat-input-area">
+    <textarea id="chat-input" placeholder="Type a message..." rows="1"></textarea>
+    <button id="chat-send" class="btn-primary">Send</button>
+  </div>
 </div>
+
+<div id="settings-overlay" class="hidden">
+  <div id="settings-panel">
+    <header id="settings-header">
+      <h2>Settings</h2>
+      <button id="settings-close" class="icon-btn" title="Close">&times;</button>
+    </header>
+    <nav id="settings-nav">
+      <button class="settings-nav-btn active" data-tab="chat-config">Chat</button>
+      <button class="settings-nav-btn" data-tab="plugins">Plugins</button>
+      <button class="settings-nav-btn" data-tab="config">Config</button>
+      <button class="settings-nav-btn" data-tab="logs">Logs</button>
+      <button class="settings-nav-btn" data-tab="mcp">MCP Setup</button>
+    </nav>
+    <main id="settings-content">
+      <section id="tab-chat-config" class="settings-tab active">
+        <h3>Chat Configuration</h3>
+        <div class="config-row"><label>API URL</label><input id="chat-api-url" data-key="chat.api_url"></div>
+        <div class="config-row"><label>API Key</label><input id="chat-api-key" type="password" data-key="chat.api_key" placeholder="sk-..."></div>
+        <div class="config-row"><label>Model</label><input id="chat-model" data-key="chat.model"></div>
+        <div class="config-row"><label>System Prompt</label><textarea id="chat-sysprompt" rows="4" data-key="chat.system_prompt"></textarea></div>
+        <div class="config-row"><label>Temperature</label><input id="chat-temp" type="number" step="0.1" min="0" max="2" data-key="chat.temperature"></div>
+        <div class="config-row"><label>Max Tokens</label><input id="chat-maxtoks" type="number" data-key="chat.max_tokens"></div>
+        <button id="save-chat-config" class="btn-primary">Save Chat Config</button>
+        <div id="chat-config-status" class="status-msg"></div>
+      </section>
+      <section id="tab-plugins" class="settings-tab">
+        <h3>Plugin Management</h3>
+        <div id="plugin-list"></div>
+      </section>
+      <section id="tab-config" class="settings-tab">
+        <h3>Configuration</h3>
+        <div id="config-editor"></div>
+        <button id="save-config" class="btn-primary">Save Config</button>
+      </section>
+      <section id="tab-logs" class="settings-tab">
+        <h3>Recent Logs</h3>
+        <pre id="log-view"></pre>
+      </section>
+      <section id="tab-mcp" class="settings-tab">
+        <h3>MCP Client Configuration</h3>
+        <p>Copy this JSON into your AI client (Chatbox, Claude Desktop, etc.):</p>
+        <pre id="mcp-config"></pre>
+        <button id="copy-mcp" class="btn-primary">Copy to Clipboard</button>
+      </section>
+    </main>
+  </div>
+</div>
+
 <script src="/static/app.js"></script>
 </body>
 </html>

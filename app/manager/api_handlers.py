@@ -1,4 +1,4 @@
-"""
+﻿"""
 REST API handlers for the management web UI.
 
 Provides endpoints for:
@@ -34,11 +34,11 @@ def _get_pm(request):
 
 def _get_restart_marker(request):
     ctx = _get_ctx(request)
-    return ctx.get_app_root() / "data" / "manager" / ".needs_restart"
+    return ctx.get_data_root() / "manager" / ".needs_restart"
 
 
 def _write_restart_marker(ctx, plugin_name, action):
-    marker = ctx.get_app_root() / "data" / "manager" / ".needs_restart"
+    marker = ctx.get_data_root() / "manager" / ".needs_restart"
     marker.parent.mkdir(parents=True, exist_ok=True)
     info = {
         "plugin": plugin_name,
